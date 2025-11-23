@@ -1,26 +1,12 @@
-$ErrorActionPreference = "Stop"
-
-Write-Host "Добро пожаловать в установщик PLGames!" -ForegroundColor Cyan
-
-# Проверка Docker
-if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    Write-Error "Docker не установлен. Пожалуйста, установите Docker Desktop и попробуйте снова."
-    exit 1
-}
-
-# Генерация .env файла
-Write-Host "Настройка окружения..." -ForegroundColor Yellow
-
-$DOMAIN = Read-Host "Введите домен (по умолчанию: localhost)"
 if ([string]::IsNullOrWhiteSpace($DOMAIN)) { $DOMAIN = "localhost" }
 
-$DB_USER = Read-Host "Введите имя пользователя БД (по умолчанию: plgames)"
+$DB_USER = Read-Host "Введите имя пользователя БД [plgames]"
 if ([string]::IsNullOrWhiteSpace($DB_USER)) { $DB_USER = "plgames" }
 
-$DB_PASSWORD = Read-Host "Введите пароль БД (по умолчанию: plgames)"
+$DB_PASSWORD = Read-Host "Введите пароль БД [plgames]"
 if ([string]::IsNullOrWhiteSpace($DB_PASSWORD)) { $DB_PASSWORD = "plgames" }
 
-$DB_NAME = Read-Host "Введите имя базы данных (по умолчанию: plgames)"
+$DB_NAME = Read-Host "Введите имя базы данных [plgames]"
 if ([string]::IsNullOrWhiteSpace($DB_NAME)) { $DB_NAME = "plgames" }
 
 if ($DOMAIN -eq "localhost") {
@@ -39,12 +25,18 @@ DB_NAME=$DB_NAME
 "@
 
 Set-Content -Path .env -Value $EnvContent
-Write-Host "Файл .env создан." -ForegroundColor Green
+Write-Host "Файл .env успешно создан." -ForegroundColor Green
 
 # Запуск Docker Compose
-Write-Host "Запуск сервисов..." -ForegroundColor Yellow
+Write-Host "Запуск сервисов (это может занять несколько минут)..." -ForegroundColor Yellow
 docker compose -f docker-compose.prod.yml up -d --build
 
-Write-Host "Установка завершена!" -ForegroundColor Green
-Write-Host "Фронтенд: http://localhost:8080 (или ваш домен)"
-Write-Host "Бэкенд: http://localhost:3010"
+Write-Host "=========================================" -ForegroundColor Green
+Write-Host "   Установка успешно завершена! 🚀" -ForegroundColor Green
+Write-Host "=========================================" -ForegroundColor Green
+Write-Host "Фронтенд доступен по адресу: http://${DOMAIN}:8080"
+Write-Host "Бэкенд API доступен по адресу: http://${DOMAIN}:3010"
+Write-Host ""
+Write-Host "Полезные команды:" -ForegroundColor Yellow
+Write-Host "  Просмотр логов: docker compose -f docker-compose.prod.yml logs -f"
+Write-Host "  Остановка:      docker compose -f docker-compose.prod.yml down"

@@ -1,7 +1,7 @@
 services:
   backend:
     build:
-      context: .
+      context: ./plgames
       dockerfile: packages/backend/server/Dockerfile
     restart: always
     environment:
@@ -19,7 +19,7 @@ services:
 
   frontend:
     build:
-      context: .
+      context: ./plgames
       dockerfile: packages/frontend/apps/web/Dockerfile
     restart: always
     ports:
