@@ -165,3 +165,39 @@ else
     exit 1
 fi
 
+# --- Копирование статических файлов для Host Caddy (если используется) ---
+echo -e "${YELLOW}Копирование статических файлов фронтенда в /var/www/plgames...${NC}"
+echo -e "${YELLOW}Это необходимо, если вы используете внешний Caddy/Nginx на хосте.${NC}"
+
+# Создаем директорию
+sudo mkdir -p /var/www/plgames
+
+# Копируем файлы из контейнера frontend
+# Имя контейнера обычно <folder_name>-frontend-1, но лучше найти динамически или использовать имя сервиса если задано container_name
+# В docker-compose.prod.yml имя контейнера не задано жестко, поэтому оно будет plane-frontend-1 или plgames-frontend-1
+# Попробуем скопировать через docker cp
+CONTAINER_NAME=$(docker compose -f docker-compose.prod.yml ps -q frontend)
+
+if [ -n "$CONTAINER_NAME" ]; then
+    # Очищаем целевую директорию (опционально, но безопасно)
+    # sudo rm -rf /var/www/plgames/* 
+    
+    # Копируем из /usr/share/caddy (куда Dockerfile кладет файлы)
+    sudo docker cp "$CONTAINER_NAME":/usr/share/caddy/. /var/www/plgames/
+    
+    # Исправляем права (чтобы веб-сервер мог читать)
+    sudo chown -R www-data:www-data /var/www/plgames 2>/dev/null || sudo chown -R 33:33 /var/www/plgames 2>/dev/null || true
+    sudo chmod -R 755 /var/www/plgames
+    
+    echo -e "${GREEN}Файлы успешно скопированы в /var/www/plgames${NC}"
+    
+    # Перезагружаем Caddy если он есть как сервис
+    if systemctl is-active --quiet caddy; then
+        echo -e "${YELLOW}Перезагрузка Caddy...${NC}"
+        sudo systemctl reload caddy
+        echo -e "${GREEN}Caddy перезагружен.${NC}"
+    fi
+else
+    echo -e "${RED}Не удалось найти контейнер фронтенда для копирования файлов.${NC}"
+fi
+
