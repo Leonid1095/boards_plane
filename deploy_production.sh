@@ -20,6 +20,10 @@ cd "$DIR"
 
 echo -e "${YELLOW}📂 Working directory: $(pwd)${NC}"
 
+# 1.1 Update Git Submodules (Critical for building from source)
+echo -e "${YELLOW}🔄 Updating submodules...${NC}"
+git submodule update --init --recursive
+
 # 2. Create/Update .env file
 echo -e "${YELLOW}⚙️  Configuring environment variables...${NC}"
 
