@@ -2,8 +2,8 @@ services:
   backend:
     build:
       context: ./plgames
-      dockerfile: packages/backend/server/Dockerfile
-    restart: always
+      dockerfile: Dockerfile.plgames
+    restart: unless-stopped
     environment:
       NODE_ENV: production
       DATABASE_URL: postgres://${DB_USER}:${DB_PASSWORD}@postgres:5432/${DB_NAME}
@@ -19,19 +19,58 @@ services:
       # OpenRouter AI
       AFFINE_COPILOT_ENABLED: true
       AFFINE_COPILOT_OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      AFFINE_COPILOT_OPENROUTER_MODEL: ${OPENROUTER_MODEL}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "3010:3010"
+    volumes:
+      - storage_data:/root/.affine/storage
+
+  frontend:
+    build:
+      context: ./plgames
+      dockerfile: packages/frontend/apps/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-plgames} -d ${DB_NAME:-plgames}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - plgames-network
 
   redis:
     image: redis:alpine
-    restart: always
+    restart: unless-stopped
     volumes:
       - redis_data:/data
+    networks:
+      - plgames-network
 
 volumes:
   postgres_data:
   redis_data:
   storage_data:
+
+
+networks:
+  plgames-network:
+    driver: bridge
