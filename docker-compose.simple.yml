@@ -1,3 +1,7 @@
+# Упрощенная версия docker-compose для PLGames Board
+# Только backend + базы данных (без frontend)
+# Frontend можно запустить отдельно или использовать существующий build
+
 services:
   backend:
     build:
@@ -32,18 +36,6 @@ services:
     networks:
       - plgames-network
 
-  frontend:
-    build:
-      context: ./plgames
-      dockerfile: packages/frontend/apps/web/Dockerfile
-    restart: unless-stopped
-    ports:
-      - "8080:80"
-    depends_on:
-      - backend
-    networks:
-      - plgames-network
-
   postgres:
     image: pgvector/pgvector:pg16
     restart: unless-stopped
@@ -73,7 +65,6 @@ volumes:
   postgres_data:
   redis_data:
   storage_data:
-
 
 networks:
   plgames-network:

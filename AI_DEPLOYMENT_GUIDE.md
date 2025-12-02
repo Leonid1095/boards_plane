@@ -663,6 +663,51 @@ docker compose -f docker-compose.prod.yml restart backend
 
 ---
 
+### Проблема 7: Frontend не собирается
+
+**Ошибка:** Cannot locate specified Dockerfile или сборка падает при yarn build
+
+**Причина:** Frontend требует полной сборки monorepo, очень долгий процесс (20-40 минут)
+
+**Решение 1 - Только backend (быстрое решение):**
+```bash
+# Остановить все
+docker compose -f docker-compose.prod.yml down
+
+# Запустить только backend + БД (без frontend)
+docker compose -f docker-compose.prod.yml up -d backend postgres redis
+
+# Проверить что backend запустился
+docker compose -f docker-compose.prod.yml logs backend | grep "successfully started"
+```
+
+**Решение 2 - Собрать frontend отдельно:**
+```bash
+cd /home/plgames/boards_plane/plgames
+
+# Установить зависимости (10-20 минут)
+yarn install
+
+# Собрать frontend (10-20 минут)
+yarn workspace @affine/web build
+
+# Настроить веб-сервер для раздачи из:
+# plgames/packages/frontend/apps/web/dist/
+```
+
+**Решение 3 - Дождаться полной сборки Docker:**
+```bash
+# Увеличить timeout и попробовать снова
+docker compose -f docker-compose.prod.yml build --no-cache frontend
+
+# Это может занять 30-60 минут!
+# Требуется минимум 4GB RAM и 10GB свободного места
+```
+
+**ВАЖНО для AI:** Если фронтенд не собирается, это не критично! Backend работает полностью, можно использовать GraphQL API. Сообщи пользователю что backend работает, а frontend можно собрать позже.
+
+---
+
 ## ✅ ЧЕКЛИСТ ДЛЯ AI
 
 Перед тем как сказать "готово", проверь:

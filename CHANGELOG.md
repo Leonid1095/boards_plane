@@ -4,12 +4,24 @@ All notable changes to PLGames Board project.
 
 ## [Unreleased]
 
+### Fixed - Docker Compose improvements
+- Fixed docker-compose.prod.yml: added default values for optional env vars (:-syntax)
+- Fixed docker-compose.prod.yml: added networks to backend and frontend services
+- Added DEPLOYMENT_FIX.md with comprehensive troubleshooting guide
+- Added docker-compose.simple.yml for backend-only deployment option
+- Updated AI_DEPLOYMENT_GUIDE.md with Problem 7: Frontend build issues
+
 ### Changed - Rebranding to PLGames Board
 - Renamed from "PLGames" to "PLGames Board"
 - Updated all documentation to reflect independent information system status
 - Removed references to being "built on AFFiNE" - now standalone system
 - Created comprehensive roadmap (ROADMAP.md) for future development
 - Updated README.md, INSTALL_RU.md, PROJECT_SUMMARY.md, AI_DEPLOYMENT_GUIDE.md
+
+### Added - Enhanced documentation
+- Added QUICK_START_GUIDE.md for new users (5-minute start guide)
+- Added FEATURES_ANALYSIS.md with detailed capabilities breakdown (AI, CRM, notifications)
+- Added ROADMAP.md with development plan v1.0 → v4.0.0 (through 2026)
 
 ## [1.0.0] - 2024-12-01
 
