@@ -16,6 +16,7 @@ All notable changes to PLGames Board project.
 - Updated all documentation to reflect independent information system status
 - Removed references to being "built on AFFiNE" - now standalone system
 - Created comprehensive roadmap (ROADMAP.md) for future development
+- Updated README.md with structured documentation section
 - Updated README.md, INSTALL_RU.md, PROJECT_SUMMARY.md, AI_DEPLOYMENT_GUIDE.md
 
 ### Added - Enhanced documentation

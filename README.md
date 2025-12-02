@@ -248,11 +248,33 @@ Contributions are welcome! Please:
 
 MIT License - Free for commercial and personal use.
 
+## 📚 Documentation
+
+### For Users:
+- **[INSTALL_RU.md](INSTALL_RU.md)** - Complete installation guide (Russian)
+- **[QUICK_START_GUIDE.md](QUICK_START_GUIDE.md)** - 5-minute quick start guide
+- **[FEATURES_ANALYSIS.md](FEATURES_ANALYSIS.md)** - Detailed features breakdown
+
+### For Developers:
+- **[ROADMAP.md](ROADMAP.md)** - Development roadmap (v1.0 → v4.0)
+- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Project overview
+- **[CHANGELOG.md](CHANGELOG.md)** - Release history
+
+### For AI Assistants:
+- **[AI_DEPLOYMENT_GUIDE.md](AI_DEPLOYMENT_GUIDE.md)** - Step-by-step deployment guide
+- **[QUICK_FIX_FOR_AI.md](QUICK_FIX_FOR_AI.md)** - Rapid troubleshooting (10 min)
+- **[DEPLOYMENT_TROUBLESHOOTING.md](DEPLOYMENT_TROUBLESHOOTING.md)** - Comprehensive troubleshooting
+- **[DEPLOYMENT_FIX.md](DEPLOYMENT_FIX.md)** - Alternative deployment options
+
+### Quality & Testing:
+- **[PROJECT_QUALITY_REPORT.md](PROJECT_QUALITY_REPORT.md)** - Quality analysis & checklist
+- **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Pre-deployment verification
+
 ## 🆘 Support
 
-- **Documentation**: See [INSTALL_RU.md](INSTALL_RU.md) for Russian guide
-- **Issues**: [GitHub Issues](https://github.com/your-username/boards_plane/issues)
-- **Email**: support@your-domain.com
+- **Documentation**: See guides above
+- **Issues**: [GitHub Issues](https://github.com/Leonid1095/boards_plane/issues)
+- **Troubleshooting**: Check [DEPLOYMENT_TROUBLESHOOTING.md](DEPLOYMENT_TROUBLESHOOTING.md) first
 
 ## 🏗️ Technology Stack
 
