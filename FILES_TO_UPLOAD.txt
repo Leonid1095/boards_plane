@@ -1,0 +1,93 @@
+=================================================================
+📦 ФАЙЛЫ ДЛЯ ЗАГРУЗКИ НА СЕРВЕР
+=================================================================
+
+✅ ОБЯЗАТЕЛЬНЫЕ ФАЙЛЫ (необходимо обновить):
+
+1. docker-compose.yml
+2. docker-compose.prod.yml
+3. plgames/packages/frontend/apps/web/Dockerfile
+
+🆕 НОВЫЕ СКРИПТЫ (рекомендуется загрузить):
+
+4. install-fixed.sh
+5. restart.sh
+
+📖 ДОКУМЕНТАЦИЯ (опционально, для справки):
+
+6. FIXES_DOCUMENTATION.md
+7. SERVER_QUICK_FIX.md
+8. DEPLOYMENT_GUIDE.md
+9. CHANGES_SUMMARY.md
+
+=================================================================
+🚀 БЫСТРАЯ ЗАГРУЗКА ЧЕРЕЗ SCP:
+=================================================================
+
+# Из локальной машины, где у вас есть исправленные файлы:
+
+scp docker-compose.yml root@your-server:/opt/plgames/
+scp docker-compose.prod.yml root@your-server:/opt/plgames/
+scp plgames/packages/frontend/apps/web/Dockerfile root@your-server:/opt/plgames/plgames/packages/frontend/apps/web/
+scp install-fixed.sh root@your-server:/opt/plgames/
+scp restart.sh root@your-server:/opt/plgames/
+scp FIXES_DOCUMENTATION.md root@your-server:/opt/plgames/
+scp SERVER_QUICK_FIX.md root@your-server:/opt/plgames/
+scp DEPLOYMENT_GUIDE.md root@your-server:/opt/plgames/
+scp CHANGES_SUMMARY.md root@your-server:/opt/plgames/
+
+# Затем на сервере:
+ssh root@your-server
+cd /opt/plgames
+chmod +x install-fixed.sh restart.sh
+bash restart.sh rebuild
+
+=================================================================
+🚀 БЫСТРАЯ ЗАГРУЗКА ЧЕРЕЗ WGET (на сервере):
+=================================================================
+
+# Выполнить на сервере:
+cd /opt/plgames
+
+# Основные файлы
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/docker-compose.yml -O docker-compose.yml
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/docker-compose.prod.yml -O docker-compose.prod.yml
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/plgames/packages/frontend/apps/web/Dockerfile -O plgames/packages/frontend/apps/web/Dockerfile
+
+# Скрипты
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/install-fixed.sh -O install-fixed.sh
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/restart.sh -O restart.sh
+
+# Документация
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/FIXES_DOCUMENTATION.md -O FIXES_DOCUMENTATION.md
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/SERVER_QUICK_FIX.md -O SERVER_QUICK_FIX.md
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/DEPLOYMENT_GUIDE.md -O DEPLOYMENT_GUIDE.md
+wget https://raw.githubusercontent.com/Leonid1095/boards_plane/main/CHANGES_SUMMARY.md -O CHANGES_SUMMARY.md
+
+# Права на выполнение
+chmod +x install-fixed.sh restart.sh
+
+# Пересборка
+bash restart.sh rebuild
+
+=================================================================
+🚀 САМЫЙ ПРОСТОЙ СПОСОБ - ЧЕРЕЗ GIT:
+=================================================================
+
+cd /opt/plgames
+git pull origin main
+chmod +x install-fixed.sh restart.sh
+bash restart.sh rebuild
+
+=================================================================
+✅ ПРОВЕРКА ПОСЛЕ ОБНОВЛЕНИЯ:
+=================================================================
+
+bash restart.sh status
+
+# Должно показать:
+# ✓ PostgreSQL: работает
+# ✓ Backend: работает  
+# ✓ Frontend: работает
+
+=================================================================
