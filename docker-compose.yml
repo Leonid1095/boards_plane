@@ -44,7 +44,7 @@ services:
   frontend:
     build:
       context: ./plgames
-      dockerfile: ./packages/frontend/apps/web/Dockerfile
+      dockerfile: packages/frontend/apps/web/Dockerfile
     restart: unless-stopped
     ports:
       - "${FRONTEND_PORT:-8080}:80"
