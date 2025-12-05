@@ -1,0 +1,21 @@
+{
+  "extends": "../../../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src"
+  },
+  "include": ["./src"],
+  "references": [
+    { "path": "../../../global" },
+    { "path": "../../../shared" },
+    { "path": "../../../components" },
+    { "path": "../../../model" },
+    { "path": "../../../rich-text" },
+    { "path": "../../../inline-preset" },
+    { "path": "../../../inline-reference" },
+    { "path": "../../../ext-loader" },
+    { "path": "../../../widget-drag-handle" },
+    { "path": "../../../widget-slash-menu" },
+    { "path": "../../data-view" }
+  ]
+}

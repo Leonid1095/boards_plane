@@ -1,0 +1,24 @@
+# NPM Configuration for Russia (mirrors)
+# If you're in Russia and experiencing slow downloads, copy this to .npmrc
+
+# Use Yandex NPM mirror
+registry=https://registry.npmmirror.com/
+
+# Taobao mirror (alternative)
+# registry=https://registry.npm.taobao.org/
+
+# Increase timeouts
+fetch-timeout=300000
+fetch-retries=5
+fetch-retry-mintimeout=20000
+fetch-retry-maxtimeout=120000
+
+# Network settings
+network-timeout=300000
+maxsockets=5
+
+# Strict SSL (disable only if having certificate issues)
+strict-ssl=true
+
+# Cache settings
+cache-min=3600
