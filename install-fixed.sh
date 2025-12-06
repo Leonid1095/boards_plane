@@ -87,10 +87,24 @@ check_existing_installation() {
                 warning "Все данные будут удалены!"
                 read -p "Вы уверены? [y/N]: " -r
                 if [[ $REPLY =~ ^[Yy]$ ]]; then
-                    info "Удаление старой установки..."
-                    docker compose -f "$INSTALL_DIR/docker-compose.yml" down -v 2>/dev/null || true
-                    rm -rf "$INSTALL_DIR"
-                    success "Старая установка удалена"
+                    info "Подготовка к переустановке..."
+                    
+                    # Важно: выходим из директории, чтобы не потерять контекст при её удалении/перемещении
+                    cd /
+
+                    info "Остановка контейнеров..."
+                    if [ -f "$INSTALL_DIR/docker-compose.yml" ]; then
+                        docker compose -f "$INSTALL_DIR/docker-compose.yml" down -v 2>/dev/null || true
+                    fi
+
+                    info "Перемещение старой версии в бэкап..."
+                    # Используем mv вместо rm, чтобы:
+                    # 1. Сохранить данные на всякий случай
+                    # 2. Не сломать выполнение скрипта, если он запущен из этой директории
+                    BACKUP_DIR="${INSTALL_DIR}_backup_$(date +%s)"
+                    mv "$INSTALL_DIR" "$BACKUP_DIR"
+                    
+                    success "Старая версия перемещена в $BACKUP_DIR"
                     MODE="install"
                 else
                     error "Установка отменена"
