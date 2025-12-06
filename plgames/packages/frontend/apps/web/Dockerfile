@@ -1,8 +1,8 @@
-FROM node:22-alpine AS builder
+FROM node:22-bookworm-slim AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++ git openssl openssl-dev libc6-compat
+RUN apt-get update && apt-get install -y python3 make g++ git openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 RUN corepack enable
 
 COPY . .
