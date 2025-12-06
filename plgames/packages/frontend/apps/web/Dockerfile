@@ -2,7 +2,7 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-RUN apk add --no-cache python3 make g++ git
+RUN apk add --no-cache python3 make g++ git openssl openssl-dev libc6-compat
 RUN corepack enable
 
 COPY . .
