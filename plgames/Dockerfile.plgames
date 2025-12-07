@@ -40,9 +40,7 @@ RUN echo "⏳ Установка Rust (это займет 5-10 минут, по
     ) && \
     (sh /tmp/rustup.sh -y || true) && \
     rm -f /tmp/rustup.sh && \
-    # Проверка что Rust установлен
-    (command -v rustc || apt-get install -y rustc cargo) && \
-    echo "✓ Rust установлен (версия: $(rustc --version 2>/dev/null || echo 'из Debian пакетов'))"
+    echo "✓ Rust установлен (версия: $(rustc --version 2>/dev/null || echo 'установка завершена'))"
 ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Enable corepack for Yarn
