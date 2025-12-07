@@ -1,0 +1,40 @@
+{$DOMAIN} {
+    # Автоматический HTTPS с Let's Encrypt
+
+    # Frontend (главная страница)
+    reverse_proxy frontend:80
+
+    # Backend API
+    reverse_proxy /api/* backend:3010
+    reverse_proxy /graphql backend:3010
+    reverse_proxy /socket.io/* backend:3010
+
+    # WebSocket support
+    @websocket {
+        header Connection *Upgrade*
+        header Upgrade websocket
+    }
+    reverse_proxy @websocket backend:3010
+
+    # Логирование
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+
+    # Сжатие
+    encode gzip
+
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent clickjacking
+        X-Frame-Options "SAMEORIGIN"
+        # Prevent XSS
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        # CSP
+        Content-Security-Policy "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https:; img-src 'self' data: https: blob:; font-src 'self' data: https:;"
+    }
+}

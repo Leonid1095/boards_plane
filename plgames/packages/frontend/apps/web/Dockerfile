@@ -19,12 +19,17 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Rust for native modules
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
 RUN corepack enable
 
 # Prisma environment variables
 ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 ENV PRISMA_CLI_BINARY_TARGETS=native,debian-openssl-3.0.x
 ENV PRISMA_QUERY_ENGINE_BINARY=debian-openssl-3.0.x
+ENV PRISMA_ENGINES_MIRROR=https://binaries.prisma.sh
 
 COPY . .
 

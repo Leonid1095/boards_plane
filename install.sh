@@ -144,14 +144,48 @@ if [ ! -f .env ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
 
-    read -p "Домен или IP [$SERVER_IP]: " DOMAIN
-    DOMAIN=${DOMAIN:-$SERVER_IP}
+    # Определяем: домен или IP
+    echo "У вас есть домен для этого проекта?"
+    echo "1) Да, у меня есть домен (автоматический HTTPS)"
+    echo "2) Нет, буду использовать IP (HTTP на портах)"
+    echo ""
+    read -p "Ваш выбор [1-2]: " DOMAIN_CHOICE
 
-    read -p "Порт frontend [8080]: " FRONTEND_PORT
-    FRONTEND_PORT=${FRONTEND_PORT:-8080}
+    if [ "$DOMAIN_CHOICE" = "1" ]; then
+        # Режим с доменом и HTTPS
+        read -p "Введите ваш домен (например, uwow-guide.online): " DOMAIN
 
-    read -p "Порт backend [3010]: " BACKEND_PORT
-    BACKEND_PORT=${BACKEND_PORT:-3010}
+        if [ -z "$DOMAIN" ]; then
+            error "Домен не может быть пустым!"
+            exit 1
+        fi
+
+        USE_HTTPS=true
+        FRONTEND_PORT=443
+        BACKEND_PORT=3010
+        BASE_URL="https://${DOMAIN}"
+        DISPLAY_URL="https://${DOMAIN}"
+
+        info "Режим: HTTPS с автоматическим сертификатом"
+        warning "Убедитесь что DNS-запись для $DOMAIN указывает на $SERVER_IP"
+
+    else
+        # Режим с IP и портами
+        read -p "IP адрес сервера [$SERVER_IP]: " DOMAIN
+        DOMAIN=${DOMAIN:-$SERVER_IP}
+
+        read -p "Порт frontend [8080]: " FRONTEND_PORT
+        FRONTEND_PORT=${FRONTEND_PORT:-8080}
+
+        read -p "Порт backend [3010]: " BACKEND_PORT
+        BACKEND_PORT=${BACKEND_PORT:-3010}
+
+        USE_HTTPS=false
+        BASE_URL="http://${DOMAIN}:${FRONTEND_PORT}"
+        DISPLAY_URL="http://${DOMAIN}:${FRONTEND_PORT}"
+
+        info "Режим: HTTP на портах (для тестирования)"
+    fi
 
     read -p "Имя БД [plgames]: " DB_NAME
     DB_NAME=${DB_NAME:-plgames}
@@ -170,9 +204,10 @@ if [ ! -f .env ]; then
 # PLGames Configuration ($(date))
 NODE_ENV=production
 DOMAIN=$DOMAIN
-BASE_URL=http://${DOMAIN}:${FRONTEND_PORT}
+BASE_URL=$BASE_URL
 FRONTEND_PORT=$FRONTEND_PORT
 BACKEND_PORT=$BACKEND_PORT
+USE_HTTPS=$USE_HTTPS
 
 # Database
 DB_USER=$DB_USER
@@ -190,10 +225,16 @@ EOF
     echo ""
     info "Ваши настройки:"
     echo "  Домен: $DOMAIN"
-    echo "  Frontend: http://${DOMAIN}:${FRONTEND_PORT}"
+    echo "  URL: $DISPLAY_URL"
     echo "  Backend: http://${DOMAIN}:${BACKEND_PORT}"
     echo "  БД: $DB_USER@$DB_NAME"
     echo "  Пароль БД: $DB_PASSWORD"
+    if [ "$USE_HTTPS" = "true" ]; then
+        echo ""
+        warning "ВАЖНО: Откройте порты 80 и 443 для автоматического получения SSL-сертификата:"
+        echo "  sudo ufw allow 80/tcp"
+        echo "  sudo ufw allow 443/tcp"
+    fi
     echo ""
 else
     # Файл .env уже есть - загружаем из него
@@ -201,14 +242,18 @@ else
     warning "Используется существующий .env"
     info "Текущие настройки:"
     echo "  Домен: ${DOMAIN:-не указан}"
-    echo "  Frontend порт: ${FRONTEND_PORT:-не указан}"
-    echo "  Backend порт: ${BACKEND_PORT:-не указан}"
+    echo "  URL: ${BASE_URL:-не указан}"
+    echo "  HTTPS: ${USE_HTTPS:-false}"
     echo ""
 fi
 
 # Сборка и запуск
 info "Остановка старых контейнеров..."
-docker compose down 2>/dev/null || true
+if [ "$USE_HTTPS" = "true" ]; then
+    docker compose -f docker-compose.yml -f docker-compose.https.yml down 2>/dev/null || true
+else
+    docker compose down 2>/dev/null || true
+fi
 
 info "Сборка образов (10-20 минут)..."
 echo ""
@@ -226,7 +271,12 @@ fi
 
 # Запуск
 info "Запуск сервисов..."
-docker compose up -d
+if [ "$USE_HTTPS" = "true" ]; then
+    info "Запуск в режиме HTTPS с автоматическим сертификатом..."
+    docker compose -f docker-compose.yml -f docker-compose.https.yml up -d
+else
+    docker compose up -d
+fi
 
 sleep 5
 
@@ -264,19 +314,38 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "  ✓ PLGames Board установлен!"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
-echo "🌐 Frontend:  http://${DOMAIN}:${FRONTEND_PORT}"
-echo "🔧 Backend:   http://${DOMAIN}:${BACKEND_PORT}"
-echo "📊 GraphQL:   http://${DOMAIN}:${BACKEND_PORT}/graphql"
+
+if [ "$USE_HTTPS" = "true" ]; then
+    echo "🌐 URL:       https://${DOMAIN}"
+    echo "🔒 HTTPS:     Автоматический сертификат Let's Encrypt"
+    echo "🔧 Backend:   http://${DOMAIN}:${BACKEND_PORT}"
+    echo ""
+    info "Caddy автоматически получит SSL-сертификат при первом обращении."
+    info "Это может занять несколько минут."
+else
+    echo "🌐 Frontend:  http://${DOMAIN}:${FRONTEND_PORT}"
+    echo "🔧 Backend:   http://${DOMAIN}:${BACKEND_PORT}"
+    echo "📊 GraphQL:   http://${DOMAIN}:${BACKEND_PORT}/graphql"
+fi
+
 echo ""
 echo "📁 Директория: $INSTALL_DIR"
 echo "📝 Конфигурация: $INSTALL_DIR/.env"
 echo ""
 echo "Команды управления (от вашего пользователя):"
 echo "  cd $INSTALL_DIR"
-echo "  docker compose ps          # Статус"
-echo "  docker compose logs -f     # Логи"
-echo "  docker compose restart     # Перезапуск"
-echo "  docker compose down        # Остановка"
+
+if [ "$USE_HTTPS" = "true" ]; then
+    echo "  docker compose -f docker-compose.yml -f docker-compose.https.yml ps       # Статус"
+    echo "  docker compose -f docker-compose.yml -f docker-compose.https.yml logs -f  # Логи"
+    echo "  docker compose -f docker-compose.yml -f docker-compose.https.yml restart  # Перезапуск"
+    echo "  docker compose -f docker-compose.yml -f docker-compose.https.yml down     # Остановка"
+else
+    echo "  docker compose ps          # Статус"
+    echo "  docker compose logs -f     # Логи"
+    echo "  docker compose restart     # Перезапуск"
+    echo "  docker compose down        # Остановка"
+fi
 echo ""
 
 # Если запущено через sudo, покажем как передать права
