@@ -25,7 +25,12 @@ RUN apt-get update && apt-get install -y \
 
 # Install Rust for native modules that require it
 RUN echo "⏳ Установка Rust (это займет 5-10 минут, пожалуйста подождите)..." && \
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y && \
+    for i in 1 2 3; do \
+        echo "Попытка $i из 3..." && \
+        curl --proto '=https' --tlsv1.2 --connect-timeout 30 --max-time 300 -sSf https://sh.rustup.rs -o /tmp/rustup.sh && break || sleep 10; \
+    done && \
+    sh /tmp/rustup.sh -y && \
+    rm /tmp/rustup.sh && \
     echo "✓ Rust установлен"
 ENV PATH="/root/.cargo/bin:${PATH}"
 
