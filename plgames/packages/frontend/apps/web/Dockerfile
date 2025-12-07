@@ -33,7 +33,10 @@ ENV PRISMA_ENGINES_MIRROR=https://binaries.prisma.sh
 
 COPY . .
 
-RUN yarn install
+# Install dependencies WITHOUT running postinstall (skip init & husky in Docker)
+RUN yarn install --immutable --mode=skip-build 2>/dev/null || yarn install --ignore-scripts
+
+# Build frontend
 RUN yarn plgames @affine/web build
 
 FROM caddy:2-alpine AS runner

@@ -259,7 +259,13 @@ info "Сборка образов (10-20 минут)..."
 echo ""
 
 # Сборка с логированием
-docker compose build --no-cache 2>&1 | tee /tmp/plgames-build.log
+# При обновлении используем кэш для ускорения, при установке - без кэша
+if [ "$MODE" = "use_existing" ]; then
+    info "Используется кэш Docker для ускорения сборки..."
+    docker compose build 2>&1 | tee /tmp/plgames-build.log
+else
+    docker compose build --no-cache 2>&1 | tee /tmp/plgames-build.log
+fi
 
 if [ ${PIPESTATUS[0]} -eq 0 ]; then
     success "Образы собраны"
@@ -278,16 +284,29 @@ else
     docker compose up -d
 fi
 
+if [ $? -ne 0 ]; then
+    error "Не удалось запустить контейнеры!"
+    exit 1
+fi
+
+success "Контейнеры запущены"
 sleep 5
 
 # Проверка
 info "Проверка готовности..."
 echo ""
 
+# Определяем compose команду в зависимости от режима
+if [ "$USE_HTTPS" = "true" ]; then
+    COMPOSE_CMD="docker compose -f docker-compose.yml -f docker-compose.https.yml"
+else
+    COMPOSE_CMD="docker compose"
+fi
+
 # PostgreSQL
 info "Ожидание PostgreSQL..."
 for i in {1..30}; do
-    if docker compose exec -T postgres pg_isready -U plgames &>/dev/null; then
+    if $COMPOSE_CMD exec -T postgres pg_isready -U ${DB_USER:-plgames} &>/dev/null; then
         success "PostgreSQL готов"
         break
     fi
@@ -299,7 +318,8 @@ echo ""
 # Backend
 info "Ожидание Backend..."
 for i in {1..60}; do
-    if curl -sf http://localhost:${BACKEND_PORT:-3010}/api/healthz &>/dev/null; then
+    # Проверяем healthcheck внутри контейнера (работает для любого режима)
+    if $COMPOSE_CMD exec -T backend curl -sf http://localhost:3010/api/healthz &>/dev/null; then
         success "Backend готов"
         break
     fi
@@ -307,6 +327,20 @@ for i in {1..60}; do
     sleep 2
 done
 echo ""
+
+# Frontend/Caddy
+if [ "$USE_HTTPS" = "true" ]; then
+    info "Ожидание Caddy (HTTPS)..."
+    for i in {1..30}; do
+        if $COMPOSE_CMD exec -T caddy wget -q --spider http://frontend:80 &>/dev/null; then
+            success "Caddy готов"
+            break
+        fi
+        echo -n "."
+        sleep 2
+    done
+    echo ""
+fi
 
 # Итог
 echo ""

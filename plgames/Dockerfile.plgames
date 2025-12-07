@@ -49,9 +49,11 @@ COPY blocksuite ./blocksuite
 # Copy all other files
 COPY . .
 
-# Install dependencies with specific Prisma binary settings
-# Using --ignore-scripts first, then running postinstall manually for better control
-RUN yarn install --inline-builds
+# Install dependencies WITHOUT running postinstall (skip init & husky in Docker)
+RUN yarn install --immutable --mode=skip-build 2>/dev/null || yarn install --ignore-scripts
+
+# Manually run Prisma generate (needed for backend)
+RUN cd packages/backend/server && npx prisma generate || true
 
 # Build the PLGames project
 RUN yarn plgames build -p server
