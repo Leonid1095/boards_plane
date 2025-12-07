@@ -13,7 +13,10 @@
       "Bash(git push:*)",
       "Bash(git reset:*)",
       "Bash(ls:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(git rm:*)",
+      "Bash(find:*)",
+      "Bash(git rebase:*)"
     ],
     "deny": [],
     "ask": []

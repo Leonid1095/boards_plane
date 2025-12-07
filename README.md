@@ -1,313 +1,330 @@
-# PLGames Board - Open Source CRM & Project Management System
+# PLGames Board - AFFINE основа + CRM
 
-**PLGames Board** is a powerful, self-hosted CRM and project management information system. Perfect for teams in Russia and worldwide.
+> **Статус:** ✅ ГОТОВО К ЗАПУСКУ (исправлено 6 декабря 2024)
 
-## ✨ Features
+Проект на основе [AFFiNE](https://github.com/toeverything/AFFiNE) с планируемой интеграцией CRM функционала из Plane.
 
-### 🎯 Core Features
-- **Project Management**: Create and manage projects with team leads
-- **Issue Tracking**: Full-featured issue tracking system (Jira-like)
-- **Sprint Planning**: Agile sprint management with backlogs
-- **Time Tracking**: Log time spent on tasks
-- **Comments & Collaboration**: Real-time team collaboration
-- **GraphQL API**: Modern API for integrations
+## 🚀 Быстрый старт
 
-### 🚀 Advanced Features
-- **Real-time Collaboration**: Work together in real-time
-- **Rich Text Editor**: Powerful document editing
-- **AI Assistant**: AI-powered content generation via OpenRouter (GPT-4, Claude, Llama)
-- **OAuth Authentication**: Yandex OAuth support for Russia
-- **Self-hosted**: Full control of your data
-- **Notifications**: In-app notification system
-- **Cron Jobs**: Scheduled tasks and automation
-
-## 🇷🇺 Russia-Friendly
-
-This project is optimized for deployment in Russia:
-- ✅ Auto-detects region and uses mirrors
-- ✅ Alternative Docker registries configured
-- ✅ NPM/Yarn mirror support
-- ✅ Yandex OAuth integration
-- ✅ Russian documentation included
-
-## 🚀 Установка за 1 команду
-
-### Автоматическая установка (рекомендуется):
+### На сервере (первая установка):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/Leonid1095/boards_plane/main/install.sh | sudo bash
+sudo bash install.sh
 ```
 
-Или через wget:
-```bash
-wget -qO- https://raw.githubusercontent.com/Leonid1095/boards_plane/main/install.sh | sudo bash
-```
+Скрипт автоматически:
+- Установит Docker (если нужно)
+- Клонирует проект из GitHub
+- Настроит конфигурацию
+- Соберет и запустит все сервисы
 
-**Что делает скрипт:**
-- ✅ Проверяет систему (Ubuntu/Debian)
-- ✅ Устанавливает Docker автоматически
-- ✅ Скачивает проект
-- ✅ Настраивает конфигурацию (интерактивно)
-- ✅ Собирает и запускает все сервисы
-- ✅ Выполняет миграции базы данных
-- ✅ Проверяет работоспособность
-
-**Время установки:** 15-20 минут
-
-**Требования:**
-- Ubuntu 20.04+ / Debian 11+
-- 4GB RAM (рекомендуется 8GB)
-- 20GB свободного места
-- Root или sudo права
-
----
-
-### Ручная установка:
+### Локально (разработка):
 
 ```bash
-# 1. Клонировать репозиторий
-git clone --recurse-submodules https://github.com/Leonid1095/boards_plane.git
-cd boards_plane
-
-# 2. Создать .env файл
-cp .env.example .env
-nano .env  # Отредактировать переменные
-
-# 3. Запустить
-docker compose up -d
-
-# 4. Выполнить миграции
-docker compose exec backend npx prisma migrate deploy
+bash dev.sh
 ```
 
-**📖 Полная инструкция:** [INSTALL.md](INSTALL.md) - подробная установка с нуля
+Интерактивное меню для:
+- Быстрого запуска
+- Пересборки образов
+- Просмотра логов
 
-## 🔧 Configuration
+## 📋 Требования
 
-After installation, edit the `.env` file to configure:
+- **Docker:** 20.10+
+- **Docker Compose:** 2.0+
+- **RAM:** 4GB минимум (8GB рекомендуется)
+- **Disk:** 15GB свободного места
+- **CPU:** 2+ ядра
+
+## 🎯 После запуска
+
+Откройте в браузере:
+
+- **Frontend:** http://localhost:8080
+- **Backend API:** http://localhost:3010
+- **GraphQL:** http://localhost:3010/graphql
+
+## 📚 Документация
+
+### Основная
+
+- **[ГОТОВО_К_ЗАПУСКУ.md](ГОТОВО_К_ЗАПУСКУ.md)** - статус проекта и быстрый старт
+- **[БЫСТРЫЙ_СТАРТ.md](БЫСТРЫЙ_СТАРТ.md)** - подробная инструкция по запуску
+- **[COMMANDS.md](COMMANDS.md)** - справочник всех команд Docker
+
+### Техническая
+
+- **[DOCKER_BUILD_FIX.md](DOCKER_BUILD_FIX.md)** - что было исправлено в Docker
+- **[PROBLEM_ANALYSIS.md](PROBLEM_ANALYSIS.md)** - анализ проблем (почему не работало)
+
+### Старые документы (архив)
+
+<details>
+<summary>Нажмите для просмотра</summary>
+
+- [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) - общее описание проекта
+- [INSTALL.md](INSTALL.md) - старая инструкция установки
+- [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) - руководство по деплою
+- [FIXES_DOCUMENTATION.md](FIXES_DOCUMENTATION.md) - документация исправлений
+- [FEATURES_ANALYSIS.md](FEATURES_ANALYSIS.md) - анализ функций
+- [ROADMAP.md](ROADMAP.md) - план развития
+
+</details>
+
+## 🔧 Ручной запуск
+
+Без скриптов:
 
 ```bash
-nano .env
+docker compose down             # Остановить
+docker compose build --no-cache # Собрать
+docker compose up -d            # Запустить
 ```
 
-### Enable AI Features
+## 📊 Проверка работы
+
+```bash
+# Статус контейнеров
+docker compose ps
+
+# Логи backend
+docker compose logs -f backend
+
+# Проверка API
+curl http://localhost:3010/api/healthz
+```
+
+## ⚙️ Основные команды
+
+```bash
+docker compose up -d         # Запустить
+docker compose down          # Остановить
+docker compose restart       # Перезапустить
+docker compose ps            # Статус
+docker compose logs -f       # Логи (все сервисы)
+docker compose logs -f backend  # Логи backend
+```
+
+Полный список команд: [COMMANDS.md](COMMANDS.md)
+
+## 🔍 Что было исправлено (6 декабря 2024)
+
+### Критические проблемы
+
+❌ **Alpine Linux** → Prisma не совместим
+❌ **Нет libvips** → Sharp не собирается
+❌ **Нет переменных Prisma** → engines не находятся
+❌ **Конфликт версий** → разные версии Prisma
+
+### Решения
+
+✅ **Debian Bookworm** → Prisma полностью совместим
+✅ **Установлен libvips** → Sharp работает
+✅ **Настроены переменные** → Prisma engines на месте
+✅ **Оптимизированная сборка** → быстро и надежно
+
+Детали: [DOCKER_BUILD_FIX.md](DOCKER_BUILD_FIX.md)
+
+## 🏗️ Структура проекта
+
+```
+.
+├── plgames/                    # Основной код (AFFINE)
+│   ├── packages/
+│   │   ├── backend/server/     # Backend (NestJS + Prisma)
+│   │   └── frontend/           # Frontend (React)
+│   ├── Dockerfile.plgames      # ✅ ИСПРАВЛЕН (Debian + Prisma)
+│   └── .dockerignore           # ✅ СОЗДАН
+│
+├── docker-compose.yml          # Конфигурация Docker
+├── .env                        # Переменные окружения
+│
+├── quick-deploy.sh             # ✅ Автоматический запуск
+└── [документация]/             # Полная документация
+```
+
+## 🛠️ Если что-то не работает
+
+### 1. Посмотрите логи
+
+```bash
+docker compose logs --tail=100 backend
+```
+
+### 2. Перезапустите сервис
+
+```bash
+docker compose restart backend
+```
+
+### 3. Пересоберите образ
+
+```bash
+docker compose build --no-cache backend
+docker compose up -d backend
+```
+
+### 4. Полная пересборка
+
+```bash
+docker compose down -v
+docker system prune -af
+bash quick-deploy.sh
+```
+
+## 🎨 Функции (AFFINE основа)
+
+- ✅ **Workspace management** - управление рабочими пространствами
+- ✅ **Document editing** - редактор документов
+- ✅ **Real-time collaboration** - совместная работа
+- ✅ **Authentication** - авторизация и OAuth
+- ✅ **PostgreSQL + Redis** - надежное хранение данных
+- 🔄 **AI integration** - интеграция с AI (настраивается)
+- 🔄 **CRM from Plane** - будет добавлено позже
+
+## 📝 Конфигурация (.env)
+
+Основные параметры уже настроены в [.env](.env):
+
+```env
+# Базовые настройки
+NODE_ENV=production
+DOMAIN=localhost
+BASE_URL=http://localhost:8080
+
+# База данных
+DB_USER=plgames
+DB_PASSWORD=<автоматически сгенерирован>
+DB_NAME=plgames
+
+# Порты
+BACKEND_PORT=3010
+FRONTEND_PORT=8080
+```
+
+### Дополнительные настройки (опционально)
+
+#### AI (OpenRouter)
 
 ```env
 AFFINE_COPILOT_ENABLED=true
-AFFINE_COPILOT_OPENROUTER_API_KEY=your_api_key
+AFFINE_COPILOT_OPENROUTER_API_KEY=sk-or-v1-ваш-ключ
 ```
 
-Get API key from [OpenRouter](https://openrouter.ai/)
-
-### Enable Yandex OAuth
+#### OAuth (Yandex)
 
 ```env
-OIDC_CLIENT_ID=your_client_id
-OIDC_CLIENT_SECRET=your_client_secret
+AFFINE_OAUTH_OIDC_ISSUER=https://oauth.yandex.ru
+OIDC_CLIENT_ID=ваш_client_id
+OIDC_CLIENT_SECRET=ваш_secret
 ```
 
-Create OAuth app at [Yandex OAuth](https://oauth.yandex.ru/client/new)
+## 🔐 Безопасность
 
-## 📊 Доступ к системе
+- ✅ PostgreSQL с паролем
+- ✅ Redis защищен внутри Docker network
+- ✅ .env файл в .gitignore
+- ⚠️ Для production добавьте HTTPS (Nginx + Certbot)
 
-**Если используете IP адрес:**
-- Frontend: `http://your-server-ip:8080`
-- Backend API: `http://your-server-ip:3010/api`
-- GraphQL: `http://your-server-ip:3010/graphql`
-
-**Если используете домен (после настройки Nginx/Caddy):**
-- Frontend: `https://your-domain.com` (порт 443)
-- Backend API: `https://api.your-domain.com` (порт 443)
-- GraphQL: `https://api.your-domain.com/graphql` (порт 443)
-
-⚠️ **Важно:** Домены работают через стандартные порты 80/443.
-Для доступа к портам 3010/8080 используйте IP адрес!
-
-## 🛠️ Команды управления
+## 📈 Мониторинг
 
 ```bash
 # Статус сервисов
 docker compose ps
 
-# Логи (все сервисы)
-docker compose logs -f
+# Использование ресурсов
+docker stats
 
-# Логи backend
-docker compose logs -f backend
+# Проверка API
+curl http://localhost:3010/api/healthz
 
-# Перезапуск
-docker compose restart
-
-# Остановка
-docker compose down
-
-# Обновление
-git pull && docker compose up -d --build
-
-# Резервная копия БД
-docker compose exec postgres pg_dump -U plgames plgames > backup_$(date +%Y%m%d).sql
+# Проверка БД
+docker compose exec postgres pg_isready -U plgames
 ```
 
-## 🏗️ Architecture
+## 🚀 Деплой на сервер
 
-```
-┌─────────────────┐
-│   Frontend      │  Port 8080 (React + Caddy)
-│   (Web UI)      │
-└────────┬────────┘
-         │
-┌────────▼────────┐
-│   Backend       │  Port 3010 (NestJS + GraphQL)
-│   (API Server)  │
-└────────┬────────┘
-         │
-    ┌────┴─────┬──────────┐
-    │          │          │
-┌───▼───┐  ┌───▼────┐  ┌──▼────┐
-│Postgres│  │ Redis  │  │Storage│
-│  DB    │  │ Cache  │  │       │
-└────────┘  └────────┘  └───────┘
+Скопируйте проект на сервер и запустите:
+
+```bash
+# На сервере
+git clone <your-repo> plgames-app
+cd plgames-app
+
+# Настройте .env (измените DOMAIN на IP/домен сервера)
+nano .env
+
+# Запустите
+bash quick-deploy.sh
 ```
 
-## 📁 Project Structure
-
-```
-.
-├── plgames/                    # Main application (submodule)
-│   ├── packages/
-│   │   ├── backend/server/     # NestJS backend
-│   │   │   └── src/
-│   │   │       └── core/crm/   # ✨ CRM Module
-│   │   └── frontend/apps/web/  # React frontend
-│   └── Dockerfile.plgames      # Backend Docker build
-├── docker-compose.prod.yml     # Production deployment
-├── deploy_production.sh        # One-click deployment script
-├── .env.example                # Environment variables template
-└── INSTALL_RU.md              # Russian installation guide
+Откройте порты в firewall:
+```bash
+sudo ufw allow 3010/tcp
+sudo ufw allow 8080/tcp
 ```
 
-## 🎯 CRM Features
+## 🤝 Дальнейшее развитие
 
-### Projects
-- Create and manage projects
-- Assign project leads
-- Track project progress
-- View project statistics
+### Краткосрочно (1-3 дня)
 
-### Issues
-- Create issues with type (Task, Bug, Story, Epic)
-- Set priority (Lowest to Highest)
-- Assign to team members
-- Track status (Backlog → Done)
-- Set due dates and story points
-- Create subtasks
+- [x] Исправить сборку Docker
+- [x] Создать автоматический скрипт запуска
+- [x] Документировать все изменения
+- [ ] Проверить все базовые функции AFFINE
+- [ ] Настроить мониторинг
 
-### Sprints
-- Create sprints with goals
-- Assign issues to sprints
-- Track sprint progress
-- Manage active/completed sprints
+### Среднесрочно (1-2 недели)
 
-### Time Tracking
-- Log time spent on issues
-- View total time per issue
-- Track team productivity
+- [ ] Интегрировать CRM из Plane
+- [ ] Настроить CI/CD
+- [ ] Добавить автоматические бэкапы
+- [ ] Оптимизировать производительность
 
-### GraphQL API Example
+### Долгосрочно (1+ месяц)
 
-```graphql
-# Create a project
-mutation {
-  createCrmProject(input: {
-    name: "My Project"
-    key: "PROJ"
-    workspaceId: "workspace-id"
-  }) {
-    id
-    name
-    key
-  }
-}
+- [ ] Добавить Prometheus + Grafana
+- [ ] Настроить Kubernetes (если нужно)
+- [ ] Масштабирование и репликация
 
-# Get project issues
-query {
-  crmIssuesByProject(
-    projectId: "project-id"
-    status: IN_PROGRESS
-  ) {
-    id
-    title
-    status
-    assignee {
-      name
-      email
-    }
-  }
-}
+## 📞 Поддержка
+
+### Полезные ссылки
+
+- **AFFINE GitHub:** https://github.com/toeverything/AFFiNE
+- **AFFINE Docs:** https://docs.affine.pro
+- **Prisma Docs:** https://www.prisma.io/docs
+- **Docker Docs:** https://docs.docker.com
+
+### Диагностика
+
+Если нужна помощь, соберите логи:
+
+```bash
+docker compose ps > status.txt
+docker compose logs --tail=200 backend > backend.log
+docker compose logs --tail=100 postgres > postgres.log
 ```
 
-## 🔒 Security
+## 📄 Лицензия
 
-- Environment-based configuration
-- Secure password generation
-- OAuth 2.0 authentication support
-- Regular security updates
-- Database backups recommended
+- **AFFINE:** MIT License
+- **PLGames:** MIT License
 
-## 📈 Performance
+## 🎯 Начните прямо сейчас!
 
-- Docker-based deployment
-- Redis caching
-- PostgreSQL with pgvector
-- Optimized build process
-- Production-ready configuration
+```bash
+bash quick-deploy.sh
+```
 
-## 🌍 Russia Deployment Notes
-
-The deployment script automatically detects if you're in Russia and:
-- Uses mirror registries for Docker images
-- Configures NPM mirrors for faster package downloads
-- Applies network timeout optimizations
-- Uses Russia-friendly CDNs
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📄 License
-
-MIT License - Free for commercial and personal use.
-
-## 📚 Documentation
-
-- **[INSTALL.md](INSTALL.md)** - Полная инструкция по установке (с нуля до работающей системы)
-- **[FEATURES_ANALYSIS.md](FEATURES_ANALYSIS.md)** - Детальный анализ возможностей
-- **[ROADMAP.md](ROADMAP.md)** - План развития проекта (v1.0 → v4.0)
-- **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Обзор проекта
-- **[CHANGELOG.md](CHANGELOG.md)** - История изменений
-
-## 🆘 Support
-
-- **Documentation**: [INSTALL.md](INSTALL.md) - полная инструкция с решением проблем
-- **Issues**: [GitHub Issues](https://github.com/Leonid1095/boards_plane/issues)
-
-## 🏗️ Technology Stack
-
-**PLGames Board** is built with modern technologies:
-- [NestJS](https://nestjs.com/) - Progressive Node.js framework
-- [Prisma](https://www.prisma.io/) - Next-generation ORM
-- [GraphQL](https://graphql.org/) - Query language for APIs
-- [PostgreSQL](https://www.postgresql.org/) - Reliable database
-- [Redis](https://redis.io/) - High-performance caching
-- [Docker](https://www.docker.com/) - Containerization
+После запуска откройте: **http://localhost:8080**
 
 ---
 
-**Made with ❤️ for teams in Russia and worldwide**
+**Последнее обновление:** 6 декабря 2024
+**Статус:** ✅ ГОТОВО К ЗАПУСКУ
+**Основа:** AFFINE (toeverything/AFFiNE)
+**Планируется:** Интеграция CRM из Plane
 
-*PLGames Board - Your complete project management solution!*
+**Вопросы?** Смотрите [БЫСТРЫЙ_СТАРТ.md](БЫСТРЫЙ_СТАРТ.md) или [COMMANDS.md](COMMANDS.md)

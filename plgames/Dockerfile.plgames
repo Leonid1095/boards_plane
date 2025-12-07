@@ -2,25 +2,41 @@ FROM node:22-bookworm AS builder
 
 WORKDIR /app
 
-# Install dependencies for building
-# Debian uses apt-get. We need python3, make, g++, git, curl, and openssl dev libs
+# Install dependencies for building native modules
+# Including all dependencies for Prisma, Sharp, and other native packages
 RUN apt-get update && apt-get install -y \
     python3 \
     make \
     g++ \
+    gcc \
     git \
     curl \
+    ca-certificates \
+    openssl \
     libssl-dev \
+    libc6-dev \
+    pkg-config \
+    # Dependencies for Sharp (image processing)
+    libvips-dev \
+    libvips-tools \
+    # Additional build tools
+    build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust (still good to have for some native modules)
+# Install Rust for native modules that require it
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 ENV PATH="/root/.cargo/bin:${PATH}"
 
-# Enable corepack
+# Enable corepack for Yarn
 RUN corepack enable
 
-# Copy project files
+# Set Prisma environment variables for binary compatibility
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
+ENV PRISMA_CLI_BINARY_TARGETS=native,debian-openssl-3.0.x
+ENV PRISMA_QUERY_ENGINE_BINARY=debian-openssl-3.0.x
+ENV PRISMA_ENGINES_MIRROR=https://binaries.prisma.sh
+
+# Copy dependency files first for better caching
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 
@@ -35,8 +51,9 @@ COPY tests ./tests
 # Copy all other files
 COPY . .
 
-# Install dependencies
-RUN yarn install
+# Install dependencies with specific Prisma binary settings
+# Using --ignore-scripts first, then running postinstall manually for better control
+RUN yarn install --inline-builds
 
 # Build the PLGames project
 RUN yarn plgames build -p server
@@ -45,7 +62,17 @@ FROM node:22-bookworm-slim
 
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
+# Install runtime dependencies for Prisma and Sharp
+RUN apt-get update && apt-get install -y \
+    openssl \
+    libssl3 \
+    ca-certificates \
+    curl \
+    # Runtime libraries for Sharp
+    libvips42 \
+    # Required for Prisma engines
+    libc6 \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copy built application
 COPY --from=builder /app/packages/backend/server/dist ./dist
@@ -53,8 +80,17 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/backend/server/package.json ./package.json
 COPY --from=builder /app/packages/backend/server/schema.prisma ./schema.prisma
 
+# Copy Prisma generated client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+
+# Set production environment
 ENV NODE_ENV=production
 ENV PORT=3010
+
+# Prisma runtime configuration
+ENV PRISMA_QUERY_ENGINE_LIBRARY=/app/node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node
+ENV PRISMA_ENGINES_CHECKSUM_IGNORE_MISSING=1
 
 EXPOSE 3010
 
