@@ -1,24 +1,12 @@
 {$DOMAIN} {
     # Автоматический HTTPS с Let's Encrypt
 
-    # Frontend (главная страница)
+    # Проксируем всё на frontend (который уже проксирует API на backend)
     reverse_proxy frontend:80
-
-    # Backend API
-    reverse_proxy /api/* backend:3010
-    reverse_proxy /graphql backend:3010
-    reverse_proxy /socket.io/* backend:3010
-
-    # WebSocket support
-    @websocket {
-        header Connection *Upgrade*
-        header Upgrade websocket
-    }
-    reverse_proxy @websocket backend:3010
 
     # Логирование
     log {
-        output file /var/log/caddy/access.log
+        output stdout
         format json
     }
 

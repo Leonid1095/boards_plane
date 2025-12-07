@@ -2,6 +2,14 @@
 # Используется когда USE_HTTPS=true
 
 services:
+  # Переопределяем frontend - убираем публикацию портов (Caddy будет проксировать)
+  frontend:
+    ports: []
+
+  # Переопределяем backend - убираем публикацию портов (только через Caddy)
+  backend:
+    ports: []
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
