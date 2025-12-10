@@ -33,6 +33,11 @@ echo "🔧 Генерация Prisma клиента..."
 yarn workspace @affine/server exec prisma generate || true
 
 echo ""
+echo "📋 Генерация шаблонов (templates)..."
+# Собираем шаблоны (они были пропущены из-за skip-build)
+yarn workspace @affine/templates build
+
+echo ""
 echo "🔨 Сборка backend (@affine/reader + server)..."
 echo "   Сборка @affine/reader..."
 yarn workspace @affine/reader build
