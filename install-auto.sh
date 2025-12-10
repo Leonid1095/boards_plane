@@ -322,6 +322,16 @@ if [ "$SKIP_BUILD" != "true" ]; then
     echo -e "${BLUE}🔨 Начинаю сборку...${NC}"
     echo ""
 
+    # Initialize git in plgames directory (required by build tools)
+    if [ ! -d "plgames/.git" ]; then
+        echo -e "${BLUE}Инициализация Git в plgames/...${NC}"
+        cd plgames
+        sudo -u $REAL_USER git init
+        sudo -u $REAL_USER git add -A
+        sudo -u $REAL_USER git commit -m "Initial build" 2>/dev/null || true
+        cd ..
+    fi
+
     # Run build script as real user
     sudo -u $REAL_USER bash build.sh
 
