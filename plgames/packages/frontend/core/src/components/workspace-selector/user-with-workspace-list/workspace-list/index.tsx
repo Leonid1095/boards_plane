@@ -375,7 +375,7 @@ const SortableWorkspaceItem = ({
   );
 };
 
-export const WorkspaceList = (props: WorkspaceListProps) => {
+export const SortableWorkspaceList = (props: WorkspaceListProps) => {
   const workspaceList = props.items;
 
   return workspaceList.map(item => (
