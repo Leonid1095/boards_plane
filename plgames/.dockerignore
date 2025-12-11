@@ -1,9 +1,9 @@
-# Node modules will be copied from build stage
-# (backend/server needs its node_modules, others don't)
-node_modules
-**/node_modules
-!packages/backend/server/node_modules
+# Node modules - ignore all except backend/server
+node_modules/*
 !node_modules/.prisma
+packages/*/node_modules
+packages/*/*/node_modules
+!packages/backend/server/node_modules
 
 # Development files
 .git
@@ -24,8 +24,11 @@ coverage
 *.spec.ts
 *.e2e.ts
 
-# Build artifacts (will be rebuilt)
+# Build artifacts - ignore all except needed ones
 dist
+!packages/backend/server/dist
+!packages/common/reader/dist
+!packages/frontend/apps/web/dist
 build
 .next
 .turbo
