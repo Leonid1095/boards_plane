@@ -30,7 +30,7 @@ COPY packages/common/reader/package.json ./packages/common/reader/package.json
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY .yarn ./.yarn
 RUN corepack enable && \
-    yarn workspaces focus @affine/server --production && \
+    yarn install --production --frozen-lockfile && \
     yarn cache clean
 
 # Generate Prisma client
