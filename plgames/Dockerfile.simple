@@ -26,15 +26,12 @@ COPY packages/backend/server/schema.prisma ./schema.prisma
 COPY packages/common/reader/dist ./packages/common/reader/dist
 COPY packages/common/reader/package.json ./packages/common/reader/package.json
 
-# Install only production dependencies
-COPY package.json yarn.lock .yarnrc.yml ./
-COPY .yarn ./.yarn
-RUN corepack enable && \
-    yarn install --production --frozen-lockfile && \
-    yarn cache clean
+# Copy node_modules from build stage
+COPY packages/backend/server/node_modules ./node_modules
+COPY node_modules/.prisma ./node_modules/.prisma
 
-# Generate Prisma client
-RUN cd /app && npx prisma generate || true
+# Generate Prisma client (in case it's missing)
+RUN npx prisma generate || true
 
 EXPOSE 3010
 
