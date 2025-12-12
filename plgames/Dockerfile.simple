@@ -26,8 +26,8 @@ COPY packages/backend/server/schema.prisma ./schema.prisma
 COPY packages/common/reader/dist ./node_modules/@affine/reader/dist
 COPY packages/common/reader/package.json ./node_modules/@affine/reader/package.json
 
-# Install production dependencies (will skip workspace:* and use what we copied)
-RUN npm install --production --ignore-scripts || true
+# Install production dependencies (without ignore-scripts to get all needed deps)
+RUN npm install --omit=dev || true
 
 # Install Prisma CLI and generate client
 RUN npm install prisma@5.22.0 @prisma/client@5.22.0 && \
