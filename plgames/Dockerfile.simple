@@ -19,20 +19,21 @@ ENV NODE_ENV=production
 
 # Copy pre-built backend dist
 COPY packages/backend/server/dist ./dist
-COPY packages/backend/server/package.json ./package.json
 COPY packages/backend/server/schema.prisma ./schema.prisma
 
-# Copy ALL built packages that backend depends on
+# Copy workspace dependencies directly to node_modules
 COPY packages/common/reader/dist ./node_modules/@affine/reader/dist
 COPY packages/common/reader/package.json ./node_modules/@affine/reader/package.json
 
-# Install production dependencies (without ignore-scripts to get all needed deps)
-RUN npm install --omit=dev || true
+# Create minimal package.json for runtime (without workspace:* dependencies)
+RUN echo '{"name":"@affine/server","version":"0.25.2","type":"module","dependencies":{"reflect-metadata":"^0.2.2"}}' > package.json
 
-# Install Prisma CLI and generate client
-RUN npm install prisma@5.22.0 @prisma/client@5.22.0 && \
+# Install only critical runtime dependencies
+RUN npm install reflect-metadata@0.2.2 && \
+    npm install prisma@5.22.0 @prisma/client@5.22.0 && \
     npx prisma generate && \
-    npm uninstall prisma
+    npm uninstall prisma && \
+    npm cache clean --force
 
 EXPOSE 3010
 
