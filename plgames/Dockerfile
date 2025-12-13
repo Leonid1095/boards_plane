@@ -48,6 +48,14 @@ RUN yarn workspace @affine/reader build && \
 # Build frontend
 RUN yarn plgames build -p @affine/web
 
+# Debug: Show what was actually built
+RUN echo "=== Checking frontend build output ===" && \
+    ls -la /workspace/packages/frontend/apps/web/ && \
+    echo "=== Contents of dist (if exists) ===" && \
+    ls -la /workspace/packages/frontend/apps/web/dist || echo "dist directory not found" && \
+    echo "=== Looking for any dist directories ===" && \
+    find /workspace/packages/frontend/apps/web -name dist -type d
+
 # ============================================
 # Stage 2: Runtime - Backend
 # ============================================
