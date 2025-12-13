@@ -46,6 +46,7 @@ RUN yarn workspace @affine/templates build
 
 # Build backend components
 RUN yarn workspace @affine/reader build && \
+    yarn workspace @affine/server-native build && \
     yarn workspace @affine/server build
 
 # Build frontend with timeout (max 30 minutes)
@@ -90,6 +91,9 @@ COPY --from=builder /workspace/node_modules ./node_modules
 # Copy built workspace packages that backend depends on
 COPY --from=builder /workspace/packages/common/reader/dist ./node_modules/@affine/reader/dist
 COPY --from=builder /workspace/packages/common/reader/package.json ./node_modules/@affine/reader/package.json
+
+# Copy native module package
+COPY --from=builder /workspace/packages/backend/native ./node_modules/@affine/server-native
 
 EXPOSE 3010
 
